@@ -1,0 +1,7 @@
+# npm이 설치하는 패키지를 무시한다.
+node_modules
+
+.DS_Store
+
+.env
+
