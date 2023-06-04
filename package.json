@@ -4,12 +4,19 @@
   "description": "node + express study",
   "main": "meadowlark.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "lint": "eslint meadowlark.js lib"
   },
   "author": "yohan.shin",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
     "express-handlebars": "^7.0.7"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "jest": "^25.5.4",
+    "portfinder": "^1.0.32",
+    "puppeteer": "^1.20.0"
   }
 }
