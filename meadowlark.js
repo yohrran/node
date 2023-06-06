@@ -5,7 +5,10 @@ const port = process.env.PORT || 3000;
 const handlers = require("./lib/handler");
 const bodyParser = require("body-parser");
 const multiparty = require("multiparty");
+const credentials = require("./.credentials.development");
+const cookieParser = require("cookie-parser");
 
+app.use(cookieParser(credentials.cookieSecret));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.disable("x-powered-by");
 
