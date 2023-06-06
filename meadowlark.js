@@ -9,6 +9,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.disable("x-powered-by");
 
 app.engine("handlebars", engine());
+
 app.set("view engine", "handlebars");
 app.set("views", "./views");
 app.use(express.static(__dirname + "/public"));
@@ -46,6 +47,10 @@ app.get("/headers", (req, res) => {
   );
   res.send(headers.join("\n"));
 });
+
+app.get("/newsletter-signup", handlers.newsletterSignup);
+app.get("/newsletter-signup/process", handlers.newsletterSignupProcess);
+app.get("/newsletter-signup/thank-you", handlers.newsletterSignupThankYou);
 
 app.use(handlers.notFound);
 
