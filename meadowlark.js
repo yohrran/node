@@ -7,8 +7,19 @@ const bodyParser = require("body-parser");
 const multiparty = require("multiparty");
 const credentials = require("./.credentials.development");
 const cookieParser = require("cookie-parser");
+const expressSession = require("express-session");
+const flashMiddleware = require("./lib/middleware/flash");
 
 app.use(cookieParser(credentials.cookieSecret));
+app.use(
+  expressSession({
+    resave: false,
+    saveUninitialized: false,
+    secret: credentials.cookieSecret,
+  })
+);
+app.use(flashMiddleware);
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.disable("x-powered-by");
 
@@ -53,6 +64,42 @@ app.get("/headers", (req, res) => {
 });
 
 app.get("/newsletter", handlers.newsletter);
+
+const VALID_EMAIL_REGEX = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
+
+app.post("/newsletter", function (req, res) {
+  const name = req.body.name || "";
+  const email = req.body.email || "";
+
+  if (VALID_EMAIL_REGEX.test(email)) {
+    res.session.flash = {
+      type: "danger",
+      intro: "Validation error!",
+      message: "The email address you entered was not valid",
+    };
+
+    return res.redirect(303, "/newsletter");
+  }
+
+  new handlers.newsletterSignup(
+    { name, email }.save((err) => {
+      if (err) {
+        req.session.flash = {
+          type: "danger",
+          intro: "Validation error!",
+          message: "There was a database error, pleases try again",
+        };
+        return res.redirect(303, "/newsletter/archive");
+      }
+      req.session.falsh = {
+        type: "success",
+        intro: "Thank you!",
+        message: "You have now been signed up for the newsletter",
+      };
+      return res.redirect(303, "/newsletter/archive");
+    })
+  );
+});
 app.post("/api/newsletter-signup", handlers.api.newsletterSignup);
 app.get("/newsletter-signup", handlers.newsletterSignup);
 app.get("/newsletter-signup/process", handlers.newsletterSignupProcess);
