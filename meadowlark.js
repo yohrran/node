@@ -4,6 +4,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const handlers = require("./lib/handler");
 const bodyParser = require("body-parser");
+const multiparty = require("multiparty");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.disable("x-powered-by");
@@ -48,9 +49,21 @@ app.get("/headers", (req, res) => {
   res.send(headers.join("\n"));
 });
 
+app.get("/newsletter", handlers.newsletter);
+app.post("/api/newsletter-signup", handlers.api.newsletterSignup);
 app.get("/newsletter-signup", handlers.newsletterSignup);
 app.get("/newsletter-signup/process", handlers.newsletterSignupProcess);
 app.get("/newsletter-signup/thank-you", handlers.newsletterSignupThankYou);
+
+app.post("/contest/vacation-photo/:year/:month", (req, res) => {
+  const form = new multiparty.Form();
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      return res.status(500).send({ error: err.message });
+    }
+    handlers.vacationPhotoContestProcess(req, res, fields, files);
+  });
+});
 
 app.use(handlers.notFound);
 
