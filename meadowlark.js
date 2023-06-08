@@ -9,7 +9,14 @@ const credentials = require("./.credentials.development");
 const cookieParser = require("cookie-parser");
 const expressSession = require("express-session");
 const flashMiddleware = require("./lib/middleware/flash");
+const nodemailer = require("nodemailer");
 
+const mailTransport = nodemailer.createTransport({
+  auth: {
+    user: credentials.sendgrid.user,
+    pass: credentials.sendgrid.password,
+  },
+});
 app.use(cookieParser(credentials.cookieSecret));
 app.use(
   expressSession({
